@@ -1,96 +1,93 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cake Slicer</title>
+  <title>蛋糕等分切割器</title>
   <style>
-    body {
+    body, html {
       margin: 0;
+      padding: 0;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      background: #000;
-      color: white;
       font-family: sans-serif;
     }
     #controls {
-      margin: 10px;
-      z-index: 10;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 8px;
+      border-radius: 8px;
     }
     #video, #overlay {
       position: absolute;
       top: 0;
       left: 0;
-    }
-    canvas {
-      pointer-events: none;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
     }
   </style>
 </head>
 <body>
   <div id="controls">
     <label for="slices">份數：</label>
-    <input type="number" id="slices" value="8" min="1" max="50" />
-    <button onclick="updateSlices()">套用</button>
+    <input type="number" id="slices" value="8" min="1" max="100" />
+    <button onclick="drawLines()">套用</button>
   </div>
   <video id="video" autoplay playsinline></video>
   <canvas id="overlay"></canvas>
 
   <script>
-    const video = document.getElementById("video");
-    const canvas = document.getElementById("overlay");
-    const ctx = canvas.getContext("2d");
-    const slicesInput = document.getElementById("slices");
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const ctx = canvas.getContext('2d');
 
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { exact: "environment" } }
-        });
-        video.srcObject = stream;
-      } catch (err) {
-        console.error("無法開啟後鏡頭，相機錯誤：", err);
-        alert("無法啟用後鏡頭，請確認裝置支援並授權相機權限。");
-      }
-    }
-
-    function updateCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      drawLines();
-    }
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+      audio: false
+    })
+    .then(stream => {
+      video.srcObject = stream;
+    });
 
     function drawLines() {
-      const slices = parseInt(slicesInput.value);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const slices = parseInt(document.getElementById('slices').value, 10);
+      canvas.width = video.videoWidth || window.innerWidth;
+      canvas.height = video.videoHeight || window.innerHeight;
+
       const cx = canvas.width / 2;
       const cy = canvas.height / 2;
       const radius = Math.min(cx, cy) * 0.9;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 畫圓形外框
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+      ctx.strokeStyle = "rgba(255,255,255,0.4)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // 畫切線
       for (let i = 0; i < slices; i++) {
-        const angle = (i / slices) * 2 * Math.PI;
+        const angle = (i * 2 * Math.PI) / slices;
         const x = cx + radius * Math.cos(angle);
         const y = cy + radius * Math.sin(angle);
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.lineTo(x, y);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.strokeStyle = "#ffffff";
         ctx.lineWidth = 2;
         ctx.stroke();
       }
     }
 
-    function updateSlices() {
-      drawLines();
-    }
-
-    window.addEventListener("resize", updateCanvas);
-    video.addEventListener("loadedmetadata", updateCanvas);
-
-    startCamera();
+    video.addEventListener('loadedmetadata', () => {
+      drawLines(); // 初次載入時自動畫線
+    });
   </script>
 </body>
 </html>
