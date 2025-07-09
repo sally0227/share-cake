@@ -5,21 +5,44 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>蛋糕等分切割器</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
   <style>
     body, html {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      font-family: sans-serif;
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: black;
     }
     #controls {
       position: absolute;
       top: 10px;
-      left: 10px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 2;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px 20px;
+      border-radius: 16px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #controls input, #controls button {
+      font-size: 16px;
+      padding: 6px 10px;
       border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+    #controls input {
+      width: 60px;
+    }
+    #controls button {
+      background-color: #ffffff;
+      color: #000000;
+      font-weight: bold;
+      cursor: pointer;
     }
     #video, #overlay {
       position: absolute;
@@ -28,6 +51,18 @@
       width: 100vw;
       height: 100vh;
       object-fit: cover;
+    }
+    #hint {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 16px;
+      border-radius: 12px;
+      font-size: 16px;
+      z-index: 2;
     }
   </style>
 </head>
@@ -39,6 +74,7 @@
   </div>
   <video id="video" autoplay playsinline></video>
   <canvas id="overlay"></canvas>
+  <div id="hint">請將蛋糕置於畫面中央，依照線條進行切割</div>
 
   <script>
     const video = document.getElementById('video');
