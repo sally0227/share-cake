@@ -1,0 +1,7 @@
+{
+  "name": "AR 切蛋糕助手",
+  "description": "一款 AR 工具，協助您透過相機畫面上的輔助線，將圓形或方形蛋糕均勻切分。",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

@@ -1,129 +1,41 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>蛋糕等分切割器</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      font-family: 'Noto Sans TC', sans-serif;
-      background-color: black;
-    }
-    #controls {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 10px 20px;
-      border-radius: 16px;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    #controls input, #controls button {
-      font-size: 16px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-    }
-    #controls input {
-      width: 60px;
-    }
-    #controls button {
-      background-color: #ffffff;
-      color: #000000;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #video, #overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-    }
-    #hint {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 6px 16px;
-      border-radius: 12px;
-      font-size: 16px;
-      z-index: 2;
-    }
-  </style>
-</head>
-<body>
-  <div id="controls">
-    <label for="slices">份數：</label>
-    <input type="number" id="slices" value="8" min="1" max="100" />
-    <button onclick="drawLines()">套用</button>
-  </div>
-  <video id="video" autoplay playsinline></video>
-  <canvas id="overlay"></canvas>
-  <div id="hint">請將蛋糕置於畫面中央，依照線條進行切割</div>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AR 切蛋糕助手</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('overlay');
-    const ctx = canvas.getContext('2d');
-
-    navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" },
-      audio: false
-    })
-    .then(stream => {
-      video.srcObject = stream;
-    });
-
-    function drawLines() {
-      const slices = parseInt(document.getElementById('slices').value, 10);
-      canvas.width = video.videoWidth || window.innerWidth;
-      canvas.height = video.videoHeight || window.innerHeight;
-
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-      const radius = Math.min(cx, cy) * 0.6;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // 畫圓形外框
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
-      ctx.strokeStyle = "rgba(255,255,255,0.4)";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // 畫切線
-      for (let i = 0; i < slices; i++) {
-        const angle = (i * 2 * Math.PI) / slices;
-        const x = cx + radius * Math.cos(angle);
-        const y = cy + radius * Math.sin(angle);
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 2;
-        ctx.stroke();
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'cream': '#FDFBF7',
+            'overlay': 'rgba(253, 251, 247, 0.95)',
+          }
+        }
       }
     }
-
-    video.addEventListener('loadedmetadata', () => {
-      drawLines(); // 初次載入時自動畫線
-    });
   </script>
+  <style>
+    /* Prevent pull-to-refresh on mobile */
+    body {
+      overscroll-behavior-y: contain;
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-black overflow-hidden">
+  <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>
